@@ -17,22 +17,19 @@ import android.widget.Toast;
 
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int GB_16 = 0;
-    private static final int GB_32 = 1;
-    private static final int GB_64 = 2;
-
     private static final double PRICE_16GB = 7.5;
     private static final double PRICE_32GB = 15.2;
     private static final double PRICE_64GB = 18.75;
 
-    HashMap<Integer, Double> priceMap = new HashMap<>();
+    private List<USBStick> usbSticks = new ArrayList<>();
 
-    private int selectedSize = GB_16;
+    private int selectedSize = USBStick.GB_16;
     private int quantity = 1;
 
     @Override
@@ -40,12 +37,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        priceMap.put(GB_16, PRICE_16GB);
-        priceMap.put(GB_32, PRICE_32GB);
-        priceMap.put(GB_64, PRICE_64GB);
+        try {
+            USBStick usbStick16 = new USBStick(USBStick.GB_16, PRICE_16GB, "16 GB USB memory");
+            USBStick usbStick32 = new USBStick(USBStick.GB_32, PRICE_32GB, "32 GB USB memory");
+            USBStick usbStick64 = new USBStick(USBStick.GB_64, PRICE_64GB, "64 GB USB memory");
+
+            usbSticks.add(usbStick16);
+            usbSticks.add(usbStick32);
+            usbSticks.add(usbStick64);
+        } catch (Exception e){
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         updateQuantityText();
         updateTotalPrice();
+        updateProductDescription();
 
         ImageButton addButton = findViewById(R.id.addButton);
         ImageButton removeButton = findViewById(R.id.removeButton);
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             quantity++;
             updateQuantityText();
             updateTotalPrice();
-
         });
 
         removeButton.setOnClickListener(v -> {
@@ -77,25 +82,17 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (checkedId){
                     case id16GB:
-                        Toast.makeText(getApplicationContext(), "clicked 16gb", Toast.LENGTH_SHORT).show();
-                        selectedSize = GB_16;
-                        updateTotalPrice();
+                        updateInfoBySize(USBStick.GB_16);
                         break;
 
                     case id32GB:
-                        Toast.makeText(getApplicationContext(), "clicked 32gb", Toast.LENGTH_SHORT).show();
-                        selectedSize = GB_32;
-                        updateTotalPrice();
+                        updateInfoBySize(USBStick.GB_32);
                         break;
 
                     case id64GB:
-                        Toast.makeText(getApplicationContext(), "clicked 64gb", Toast.LENGTH_SHORT).show();
-                        selectedSize = GB_64;
-                        updateTotalPrice();
+                        updateInfoBySize(USBStick.GB_64);
                         break;
-
                 }
-
             }
         });
     }
@@ -106,10 +103,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateTotalPrice(){
-        Double totalPrice = priceMap.get(selectedSize) * quantity;
+        try {
+            USBStick currentStick = getUsbStickBySize(selectedSize);
+            Double totalPrice = currentStick.getPrice() * quantity;
+            TextView totalPriceText = findViewById(R.id.totalPriceText);
+            totalPriceText.setText(String.format("%.2f",totalPrice));
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        TextView totalPriceText = findViewById(R.id.totalPriceText);
-        totalPriceText.setText(String.format("%.2f",totalPrice));
+    private USBStick getUsbStickBySize(int selectedSize) throws Exception {
+        for (USBStick s :
+                usbSticks) {
+            if (s.getMemorySize() == selectedSize) {
+                return s;
+            }
+        }
+        throw new Exception("Invalid size");
+    }
+
+    private void updateProductDescription()  {
+        TextView descriptionText = findViewById(R.id.dexcribtionText);
+        String description = null;
+        try {
+            description = getUsbStickBySize(selectedSize).getDescription();
+            descriptionText.setText(description);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateInfoBySize(int size){
+        selectedSize = size;
+        updateTotalPrice();
+        updateProductDescription();
     }
 
 }
