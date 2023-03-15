@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -22,13 +23,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        app:layout_constraintBottom_toBottomOf="@+id/dexcribtionText"
+        app:layout_constraintBottom_toBottomOf="@+id/descriptionText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dexcribtionText"
+        app:layout_constraintTop_toTopOf="@+id/descriptionText"
         app:srcCompat="@drawable/ic_baseline_description_24" />
 
     <TextView
-        android:id="@+id/dexcribtionText"
+        android:id="@+id/descriptionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -67,9 +68,9 @@
 
         <RadioButton
             android:id="@+id/radioButton16GB"
-            android:checked="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="16 GB" />
 
         <RadioButton
@@ -167,29 +168,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
-        app:singleSelection="true"
-
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/dexcribtionText">
+        app:layout_constraintTop_toBottomOf="@+id/descriptionText"
+        app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
             android:id="@+id/blueChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checkable="true"
             android:checked="true"
             android:text="Blue"
-            android:textColor="@color/blue"
-            android:checkable="true"
-            />
+            android:textColor="@color/blue" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/blackChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checkable="true"
-            android:textColor="@color/black"
             android:text="Black"
-            />
+            android:textColor="@color/black" />
     </com.google.android.material.chip.ChipGroup>
 
     <ImageView

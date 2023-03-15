@@ -6,6 +6,10 @@ android {
     namespace 'com.example.eshop'
     compileSdk 33
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.example.eshop"
         minSdk 21

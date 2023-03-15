@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="Profile"
+        android:id="@+id/profile_item"
+        android:icon="@drawable/ic_baseline_person_24"
+        app:showAsAction="ifRoom"
+        />
+
+    <item android:title="About"
+        android:id="@+id/about_item"
+        />
+
+    <item android:title="Shopping Cart"
+        android:id="@+id/shopping_cart_item"
+        />
+
+    <item android:title="Orders"
+        android:id="@+id/orders_item"
+        />
+</menu>

@@ -3,6 +3,7 @@ package com.example.eshop;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.eshop.databinding.ActivityMainBinding;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
@@ -28,14 +30,18 @@ public class MainActivity extends AppCompatActivity {
     private static final double PRICE_64GB = 18.75;
 
     private List<USBStick> usbSticks = new ArrayList<>();
+    private ActivityMainBinding binding;
 
     private int selectedSize = USBStick.GB_16;
+    private int selectedColor = Color.BLUE;
     private int quantity = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.mainLayout);
 
         try {
             USBStick usbStick16 = new USBStick(USBStick.GB_16, PRICE_16GB, "16 GB USB memory");
@@ -52,17 +58,14 @@ public class MainActivity extends AppCompatActivity {
         updateQuantityText();
         updateTotalPrice();
         updateProductDescription();
-
-        ImageButton addButton = findViewById(R.id.addButton);
-        ImageButton removeButton = findViewById(R.id.removeButton);
-
-        addButton.setOnClickListener(v -> {
+        
+        binding.addButton.setOnClickListener(v -> {
             quantity++;
             updateQuantityText();
             updateTotalPrice();
         });
 
-        removeButton.setOnClickListener(v -> {
+        binding.removeButton.setOnClickListener(v -> {
             if (quantity > 0){
                 quantity--;
                 updateQuantityText();
@@ -72,8 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RadioGroup radioGroup = findViewById(R.id.memorySizeRG);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            binding.memorySizeRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 final int id16GB = R.id.radioButton16GB;
@@ -95,19 +97,66 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        binding.chipGroup.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull ChipGroup group, @NonNull List<Integer> checkedIds) {
+
+                for (int id :
+                        checkedIds) {
+                    if (id == R.id.blackChip) {
+                        binding.usbStickImage.setImageResource(R.drawable.usb_stick_black);
+                        selectedColor = Color.BLACK;
+                    } else if (id == R.id.blueChip){
+                        binding.usbStickImage.setImageResource(R.drawable.usb_stick_blue);
+                        selectedColor = Color.BLUE;
+                    }
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        final int profileId = R.id.profile_item;
+        final int aboutId = R.id.about_item;
+        final int shoppingCartId = R.id.shopping_cart_item;
+        final int ordersId = R.id.orders_item;
+
+        switch (item.getItemId()) {
+            case profileId:
+                Toast.makeText(getApplicationContext(), "Profile clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case aboutId:
+                break;
+            case shoppingCartId:
+                break;
+            case ordersId:
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     private void updateQuantityText() {
-        TextView quantityText = findViewById(R.id.quantityText);
-        quantityText.setText(String.valueOf(quantity));
+        binding.quantityText.setText(String.valueOf(quantity));
     }
 
     private void updateTotalPrice(){
         try {
             USBStick currentStick = getUsbStickBySize(selectedSize);
             Double totalPrice = currentStick.getPrice() * quantity;
-            TextView totalPriceText = findViewById(R.id.totalPriceText);
-            totalPriceText.setText(String.format("%.2f",totalPrice));
+            binding.totalPriceText.setText(String.format("%.2f",totalPrice));
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -124,11 +173,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateProductDescription()  {
-        TextView descriptionText = findViewById(R.id.dexcribtionText);
         String description = null;
         try {
             description = getUsbStickBySize(selectedSize).getDescription();
-            descriptionText.setText(description);
+            binding.descriptionText.setText(description);
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
