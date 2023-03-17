@@ -1,6 +1,7 @@
-package com.example.eshop;
+package com.example.eshop.usbstick;
 
-public class USBStick {
+public class UsbStick {
+    //constants used to identify memory size
     public static final int GB_16 = 16;
     public static final int GB_32 = 32;
     public static final int GB_64 = 64;
@@ -8,15 +9,17 @@ public class USBStick {
     private final int memorySize;
     private final Double price;
     private final String description;
+    private final int color;
 
-    public USBStick(int memorySize, Double price, String description) throws Exception {
+    public UsbStick(int memorySize, Double price, String description, int color) throws NoSuchUsbStickException {
         if (memorySize == GB_16 || memorySize == GB_32 || memorySize == GB_64) {
             this.memorySize = memorySize;
-        } else throw new Exception("Invalid size");
+        } else throw new NoSuchUsbStickException("Invalid size");
         if (price > 0) {
             this.price = price;
-        } else throw new Exception("Invalid price");
+        } else throw new NoSuchUsbStickException("Invalid price");
         this.description = description;
+        this.color = color;
     }
 
     public Double getPrice() {
@@ -30,4 +33,9 @@ public class USBStick {
     public String getDescription() {
         return description;
     }
+
+    public int getColor() {
+        return color;
+    }
+
 }

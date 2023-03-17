@@ -12,7 +12,6 @@ public class ShoppingCartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityShoppingCartBinding binding = ActivityShoppingCartBinding.inflate(getLayoutInflater());
-        setContentView(R.layout.activity_shopping_cart);
-
+        setContentView(binding.getRoot());
     }
 }

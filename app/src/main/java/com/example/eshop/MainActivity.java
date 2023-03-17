@@ -8,97 +8,202 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.eshop.databinding.ActivityMainBinding;
+import com.example.eshop.usbstick.NoSuchUsbStickException;
+import com.example.eshop.usbstick.UsbStick;
+import com.example.eshop.usbstick.UsbStickPrices;
+import com.example.eshop.usbstick.UsbSticksRepository;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final double PRICE_16GB = 7.5;
-    private static final double PRICE_32GB = 15.2;
-    private static final double PRICE_64GB = 18.75;
-
-    private List<USBStick> usbSticks = new ArrayList<>();
+    private UsbSticksRepository sticksRepository = new UsbSticksRepository();
     private ActivityMainBinding binding;
 
-    private int selectedSize = USBStick.GB_16;
+    private int selectedSize = UsbStick.GB_16;
     private int selectedColor = Color.BLUE;
     private int quantity = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //creating an instance of the binding class by calling static method inflate
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        //passing the root view to setContentView() to make it the active view on the screen
+        setContentView(binding.getRoot());
 
-        ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.mainLayout);
+        //creating usb sticks
+        addUsbSticksToRepository();
 
-        try {
-            USBStick usbStick16 = new USBStick(USBStick.GB_16, PRICE_16GB, "16 GB USB memory");
-            USBStick usbStick32 = new USBStick(USBStick.GB_32, PRICE_32GB, "32 GB USB memory");
-            USBStick usbStick64 = new USBStick(USBStick.GB_64, PRICE_64GB, "64 GB USB memory");
-
-            usbSticks.add(usbStick16);
-            usbSticks.add(usbStick32);
-            usbSticks.add(usbStick64);
-        } catch (Exception e){
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
+        //updating TextViews of the interface with the default UsbStick selected
         updateQuantityText();
         updateTotalPrice();
         updateProductDescription();
-        
+
+        //adding listeners for the
+        addListeners();
+    }
+
+    /**
+     *  overriding onCreateOptionsMenu to specify the options menu for the Activity
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * overriding onOptionsItemSelected to handle the users selection of
+     * an item from the menu
+     * @param item the chosen menu item by the user
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //save the IDs of the items to variables
+        final int profileId = R.id.profile_item;
+        final int aboutId = R.id.about_item;
+        final int shoppingCartId = R.id.shopping_cart_item;
+        final int ordersId = R.id.orders_item;
+
+        //using switch to detect which option is selected
+        switch (item.getItemId()) {
+            case profileId:
+                Toast.makeText(getApplicationContext(), "Profile clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case aboutId:
+                Toast.makeText(getApplicationContext(), "About clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case shoppingCartId:
+                Toast.makeText(getApplicationContext(), "Shopping cart clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case ordersId:
+                Toast.makeText(getApplicationContext(), "Orders clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * this method updates the quantity TextView in the interface
+     * */
+    private void updateQuantityText() {
+        binding.quantityText.setText(String.valueOf(quantity));
+    }
+
+    /**
+     * this method updates the total price TextView in the interface
+     * */
+    private void updateTotalPrice() {
+        try {
+            UsbStick currentStick = getCurrentUsbStick();
+            Double totalPrice = currentStick.getPrice() * quantity;
+            binding.totalPriceText.setText(String.format("%.2f", totalPrice));
+        } catch (NoSuchUsbStickException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * updates products description TextView in the interface
+     * */
+    private void updateProductDescription() {
+        try {
+            UsbStick stick = getCurrentUsbStick();
+            String description = stick.getDescription();
+
+            binding.descriptionText.setText(description);
+        } catch (NoSuchUsbStickException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @return gets the current UsbStick object from the repository
+     * */
+    private UsbStick getCurrentUsbStick() throws NoSuchUsbStickException {
+        return sticksRepository.getUsbStickBySizeAndColor(selectedSize, selectedColor);
+    }
+
+    /**
+     * updates the TextViews and selectedSize
+     * */
+    private void updateInfoBySize(int size) {
+        selectedSize = size;
+        updateTotalPrice();
+        updateProductDescription();
+    }
+
+    /**
+     * OnClickListener for addButton
+     * */
+    private void addAddButtonListener() {
         binding.addButton.setOnClickListener(v -> {
             quantity++;
             updateQuantityText();
             updateTotalPrice();
         });
+    }
 
+    /**
+     * OnClickListener for removeButton
+     * */
+    private void addRemoveButtonListener() {
         binding.removeButton.setOnClickListener(v -> {
-            if (quantity > 0){
+            if (quantity > 0) {
                 quantity--;
                 updateQuantityText();
                 updateTotalPrice();
-            }else {
+            } else {
                 Toast.makeText(getApplicationContext(), "Quantity must be greater than 0", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-            binding.memorySizeRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+    /**
+     * This method adds OnCheckedChangeListener for the radio group. When the user chooses
+     * a radio button, onCheckedChanged method is called
+     * */
+    private void addMemorySizeSelectionListener() {
+        binding.memorySizeRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 final int id16GB = R.id.radioButton16GB;
                 final int id32GB = R.id.radioButton32GB;
                 final int id64GB = R.id.radioButton64GB;
 
-                switch (checkedId){
+                //using switch to detect which option is chosen
+                switch (checkedId) {
                     case id16GB:
-                        updateInfoBySize(USBStick.GB_16);
+                        updateInfoBySize(UsbStick.GB_16);
                         break;
 
                     case id32GB:
-                        updateInfoBySize(USBStick.GB_32);
+                        updateInfoBySize(UsbStick.GB_32);
                         break;
 
                     case id64GB:
-                        updateInfoBySize(USBStick.GB_64);
+                        updateInfoBySize(UsbStick.GB_64);
                         break;
                 }
             }
         });
+    }
 
 
+    /**
+     * This method adds OnCheckedStateChangeListener for the chip group. When the user
+     * chooses a chip, onCheckedChanged method is called. In this case, the chipGroup has
+     * an attribute app:singleSelection, so the checkedIds list will always have 1 item
+     * */
+    private void addColorSelectionListener() {
         binding.chipGroup.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull ChipGroup group, @NonNull List<Integer> checkedIds) {
@@ -108,84 +213,47 @@ public class MainActivity extends AppCompatActivity {
                     if (id == R.id.blackChip) {
                         binding.usbStickImage.setImageResource(R.drawable.usb_stick_black);
                         selectedColor = Color.BLACK;
-                    } else if (id == R.id.blueChip){
+                    } else if (id == R.id.blueChip) {
                         binding.usbStickImage.setImageResource(R.drawable.usb_stick_blue);
                         selectedColor = Color.BLUE;
                     }
                 }
             }
         });
-
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+/**
+ * Adds all listeners
+ * */
+    private void addListeners() {
+        addAddButtonListener();
+        addRemoveButtonListener();
+        addMemorySizeSelectionListener();
+        addColorSelectionListener();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final int profileId = R.id.profile_item;
-        final int aboutId = R.id.about_item;
-        final int shoppingCartId = R.id.shopping_cart_item;
-        final int ordersId = R.id.orders_item;
-
-        switch (item.getItemId()) {
-            case profileId:
-                Toast.makeText(getApplicationContext(), "Profile clicked", Toast.LENGTH_SHORT).show();
-                break;
-            case aboutId:
-                break;
-            case shoppingCartId:
-                break;
-            case ordersId:
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-    private void updateQuantityText() {
-        binding.quantityText.setText(String.valueOf(quantity));
-    }
-
-    private void updateTotalPrice(){
+    /**
+     * This method creates and adds UsbStick objects to UsbStickRepository
+     * */
+    private void addUsbSticksToRepository() {
         try {
-            USBStick currentStick = getUsbStickBySize(selectedSize);
-            Double totalPrice = currentStick.getPrice() * quantity;
-            binding.totalPriceText.setText(String.format("%.2f",totalPrice));
-        } catch (Exception e) {
+            UsbStick usbStick16Black = new UsbStick(UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "16 GB USB memory", Color.BLACK);
+            UsbStick usbStick16Blue = new UsbStick(UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "16 GB USB memory", Color.BLUE);
+            UsbStick usbStick32Black = new UsbStick(UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "32 GB USB memory", Color.BLACK);
+            UsbStick usbStick32Blue = new UsbStick(UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "32 GB USB memory", Color.BLUE);
+            UsbStick usbStick64Black = new UsbStick(UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "64 GB USB memory", Color.BLACK);
+            UsbStick usbStick64Blue = new UsbStick(UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "64 GB USB memory", Color.BLUE);
+
+            sticksRepository.addUsbStick(usbStick16Black);
+            sticksRepository.addUsbStick(usbStick32Black);
+            sticksRepository.addUsbStick(usbStick64Black);
+            sticksRepository.addUsbStick(usbStick64Blue);
+            sticksRepository.addUsbStick(usbStick32Blue);
+            sticksRepository.addUsbStick(usbStick16Blue);
+
+        } catch (NoSuchUsbStickException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private USBStick getUsbStickBySize(int selectedSize) throws Exception {
-        for (USBStick s :
-                usbSticks) {
-            if (s.getMemorySize() == selectedSize) {
-                return s;
-            }
-        }
-        throw new Exception("Invalid size");
-    }
-
-    private void updateProductDescription()  {
-        String description = null;
-        try {
-            description = getUsbStickBySize(selectedSize).getDescription();
-            binding.descriptionText.setText(description);
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void updateInfoBySize(int size){
-        selectedSize = size;
-        updateTotalPrice();
-        updateProductDescription();
     }
 
 }
