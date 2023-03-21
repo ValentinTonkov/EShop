@@ -3,6 +3,7 @@ package com.example.eshop;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.eshop.databinding.ActivityMainBinding;
+import com.example.eshop.store.Order;
+import com.example.eshop.store.OrderItem;
 import com.example.eshop.usbstick.NoSuchUsbStickException;
 import com.example.eshop.usbstick.UsbStick;
 import com.example.eshop.usbstick.UsbStickPrices;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int selectedSize = UsbStick.GB_16;
     private int selectedColor = Color.BLUE;
     private int quantity = 1;
+    private Order order = new Order();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,17 @@ public class MainActivity extends AppCompatActivity {
 
         //adding listeners for the
         addListeners();
+
+        binding.buyButton.setOnClickListener(v -> {
+            try {
+                OrderItem orderItem = new OrderItem(getCurrentUsbStick(), quantity);
+                order.addOrderItem(orderItem);
+                Toast.makeText(getApplicationContext(), "Product added", Toast.LENGTH_SHORT).show();
+
+            } catch (NoSuchUsbStickException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -82,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case shoppingCartId:
                 Toast.makeText(getApplicationContext(), "Shopping cart clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), ShoppingCartActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("order", order);
+                intent.putExtra("order", bundle);
+                startActivity(intent);
                 return true;
             case ordersId:
                 Toast.makeText(getApplicationContext(), "Orders clicked", Toast.LENGTH_SHORT).show();
@@ -221,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 /**
  * Adds all listeners
  * */
@@ -237,12 +256,12 @@ public class MainActivity extends AppCompatActivity {
      * */
     private void addUsbSticksToRepository() {
         try {
-            UsbStick usbStick16Black = new UsbStick(UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "16 GB USB memory", Color.BLACK);
-            UsbStick usbStick16Blue = new UsbStick(UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "16 GB USB memory", Color.BLUE);
-            UsbStick usbStick32Black = new UsbStick(UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "32 GB USB memory", Color.BLACK);
-            UsbStick usbStick32Blue = new UsbStick(UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "32 GB USB memory", Color.BLUE);
-            UsbStick usbStick64Black = new UsbStick(UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "64 GB USB memory", Color.BLACK);
-            UsbStick usbStick64Blue = new UsbStick(UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "64 GB USB memory", Color.BLUE);
+            UsbStick usbStick16Black = new UsbStick(0, UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "Black USB Stick, 16 GB", Color.BLACK);
+            UsbStick usbStick16Blue = new UsbStick(1, UsbStick.GB_16, UsbStickPrices.PRICE_16GB, "Blue USB Stick, 16 GB", Color.BLUE);
+            UsbStick usbStick32Black = new UsbStick(2, UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "Black USB Stick, 32 GB", Color.BLACK);
+            UsbStick usbStick32Blue = new UsbStick(3, UsbStick.GB_32, UsbStickPrices.PRICE_32GB, "Blue USB Stick, 32 GB", Color.BLUE);
+            UsbStick usbStick64Black = new UsbStick(4, UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "Black USB Stick, 64 GB", Color.BLACK);
+            UsbStick usbStick64Blue = new UsbStick(5, UsbStick.GB_64, UsbStickPrices.PRICE_64GB, "Blue USB Stick, 64 GB", Color.BLUE);
 
             sticksRepository.addUsbStick(usbStick16Black);
             sticksRepository.addUsbStick(usbStick32Black);
