@@ -4,12 +4,16 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 
+/**
+ * This class represents an item in an order.
+ * It contains certain Product and added quantity of it
+ * */
+
 public class OrderItem implements Serializable {
-    private final int quantity;
+    private int quantity;
     private final Product product;
 
     public OrderItem(Product product, int quantity){
-
         this.quantity = quantity;
         this.product = product;
     }
@@ -38,5 +42,9 @@ public class OrderItem implements Serializable {
         builder.append(" pieces)");
 
         return builder.toString();
+    }
+
+    public void addQuantity(int quantityToAdd) {
+        quantity += quantityToAdd;
     }
 }

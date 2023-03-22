@@ -51,17 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
         //adding listeners for the
         addListeners();
-
-        binding.buyButton.setOnClickListener(v -> {
-            try {
-                OrderItem orderItem = new OrderItem(getCurrentUsbStick(), quantity);
-                order.addOrderItem(orderItem);
-                Toast.makeText(getApplicationContext(), "Product added", Toast.LENGTH_SHORT).show();
-
-            } catch (NoSuchUsbStickException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     /**
@@ -95,14 +84,20 @@ public class MainActivity extends AppCompatActivity {
             case aboutId:
                 Toast.makeText(getApplicationContext(), "About clicked", Toast.LENGTH_SHORT).show();
                 return true;
+
+                //this case will be triggered when the user presses the Shoping cart item from the menu
             case shoppingCartId:
-                Toast.makeText(getApplicationContext(), "Shopping cart clicked", Toast.LENGTH_SHORT).show();
+
+                //Creating an Intent object that will be used to start ShoppingCartActivity
                 Intent intent = new Intent(getApplicationContext(), ShoppingCartActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("order", order);
-                intent.putExtra("order", bundle);
+
+                //attaching data to the intent object
+                intent.putExtra("order", order);
+
+                //starting the activity by using the intent
                 startActivity(intent);
                 return true;
+
             case ordersId:
                 Toast.makeText(getApplicationContext(), "Orders clicked", Toast.LENGTH_SHORT).show();
                 return true;
@@ -249,6 +244,20 @@ public class MainActivity extends AppCompatActivity {
         addRemoveButtonListener();
         addMemorySizeSelectionListener();
         addColorSelectionListener();
+        addAddToCartButtonListener();
+    }
+
+    private void addAddToCartButtonListener() {
+        binding.addToCartButton.setOnClickListener(v -> {
+            try {
+                OrderItem orderItem = new OrderItem(getCurrentUsbStick(), quantity);
+                order.addOrderItem(orderItem);
+                Toast.makeText(getApplicationContext(), "Product added", Toast.LENGTH_SHORT).show();
+
+            } catch (NoSuchUsbStickException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

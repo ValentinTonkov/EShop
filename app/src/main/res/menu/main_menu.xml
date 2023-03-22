@@ -4,8 +4,7 @@
 
     <item android:title="Profile"
         android:id="@+id/profile_item"
-        android:icon="@drawable/ic_baseline_person_24"
-        app:showAsAction="ifRoom"
+
         />
 
     <item android:title="About"
@@ -14,6 +13,8 @@
 
     <item android:title="Shopping Cart"
         android:id="@+id/shopping_cart_item"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_baseline_shopping_cart_24"
         />
 
     <item android:title="Orders"

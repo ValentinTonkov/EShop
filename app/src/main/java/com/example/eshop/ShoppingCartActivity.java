@@ -1,13 +1,11 @@
 package com.example.eshop;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.eshop.databinding.ActivityShoppingCartBinding;
-import com.example.eshop.recyclerview.OrderItemsAdapter;
 import com.example.eshop.store.Order;
 
 public class ShoppingCartActivity extends AppCompatActivity {
@@ -18,13 +16,19 @@ public class ShoppingCartActivity extends AppCompatActivity {
         ActivityShoppingCartBinding binding = ActivityShoppingCartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //getting the Intent object that has started the Activity
         Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("order");
-        Order order = (Order) bundle.getSerializable("order");
-        OrderItemsAdapter adapter = new OrderItemsAdapter(order);
-        Intent i = new Intent();
 
-        binding.ordersRecyclerView.setAdapter(adapter);
-        binding.ordersRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        //calling the method getSerializableExtra() to retrieve the Order object passed with
+        //the intent. It should be casted to Object
+        Order order = (Order) intent.getSerializableExtra("order");
+
+        //setting the order's info text to a TextView
+        binding.orderText.setText(order.toString());
+
+        //setting the total price to a TextView
+        binding.orderTotalText.setText(String.valueOf(order.getTotalPrice()));
+
+
     }
 }
