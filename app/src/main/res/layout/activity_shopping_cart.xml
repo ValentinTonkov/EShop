@@ -7,32 +7,65 @@
     tools:context=".ShoppingCartActivity">
 
     <TextView
-        android:id="@+id/orderText"
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="30dp"
+        android:text="Total price:"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintEnd_toStartOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
     <TextView
         android:id="@+id/orderTotalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="40dp"
-        android:text="TextView"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="36dp"
+        android:text="20"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orderText" />
+        app:layout_constraintTop_toBottomOf="@+id/cartRecyclerView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cartRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:text="Total price:"
+        android:layout_marginTop="10dp"
+        android:text="Your order's details:"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/cartRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:text="update"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:text="$"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/orderTotalText"
         app:layout_constraintEnd_toStartOf="@+id/orderTotalText"
         app:layout_constraintTop_toTopOf="@+id/orderTotalText" />
