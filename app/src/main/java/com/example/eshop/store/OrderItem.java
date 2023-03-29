@@ -47,4 +47,10 @@ public class OrderItem implements Serializable {
     public void addQuantity(int quantityToAdd) {
         quantity += quantityToAdd;
     }
+
+    public void removeQuantity(int i) {
+        if (quantity > 0){
+            quantity--;
+        }
+    }
 }
