@@ -38,9 +38,5 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 binding.orderTotalText.setText(String.valueOf(order.getTotalPrice()));
             }
         });
-
-
-
-
     }
 }
