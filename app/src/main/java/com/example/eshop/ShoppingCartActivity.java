@@ -38,5 +38,11 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 binding.orderTotalText.setText(String.valueOf(order.getTotalPrice()));
             }
         });
+
+        binding.sumbitButton.setOnClickListener(v -> {
+           Intent i = new Intent(getApplicationContext(), UserInfoActivity.class);
+           i.putExtra("order", order);
+           startActivity(i);
+        });
     }
 }

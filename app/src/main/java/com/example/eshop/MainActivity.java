@@ -41,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         //passing the root view to setContentView() to make it the active view on the screen
         setContentView(binding.getRoot());
 
+        // restoring order
+        if (savedInstanceState != null){
+            order = (Order) savedInstanceState.getSerializable("order");
+        }
+
         //creating usb sticks
         addUsbSticksToRepository();
 
@@ -284,4 +289,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("order", order);
+        Toast.makeText(getApplicationContext(), "onSaveInstanceState()", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+       // Toast.makeText(getApplicationContext(), "onPause()")
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Toast.makeText(getApplicationContext(), "onResume()")
+    }
 }
